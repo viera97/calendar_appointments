@@ -1,0 +1,158 @@
+import { useState, useEffect } from 'react';
+import type { Service, Appointment, AppointmentFormData } from './types';
+import { businessInfo, fetchServices } from './services/mockApi';
+import { appointmentStorage, generateAppointmentId } from './services/appointmentStorage';
+import BusinessHeader from './components/BusinessHeader';
+import ServiceList from './components/ServiceList';
+import AppointmentForm from './components/AppointmentForm';
+import AppointmentList from './components/AppointmentList';
+import './App.css';
+
+function App() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [selectedService, setSelectedService] = useState<Service | undefined>();
+  const [currentView, setCurrentView] = useState<'services' | 'booking' | 'appointments'>('services');
+  const [loading, setLoading] = useState(false);
+
+  // Cargar servicios y citas al iniciar la aplicación
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        // Cargar servicios desde API mock
+        const servicesData = await fetchServices();
+        setServices(servicesData);
+        
+        // Cargar citas desde localStorage
+        const storedAppointments = appointmentStorage.getAppointments();
+        setAppointments(storedAppointments);
+      } catch (error) {
+        console.error('Error al cargar los datos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const handleServiceSelect = (service: Service) => {
+    setSelectedService(service);
+    setCurrentView('booking');
+  };
+
+  const handleAppointmentSubmit = (formData: AppointmentFormData) => {
+    try {
+      const newAppointment: Appointment = {
+        id: generateAppointmentId(),
+        clientName: formData.clientName,
+        clientPhone: formData.clientPhone,
+        serviceId: formData.serviceId,
+        serviceName: selectedService?.name || '',
+        date: formData.date,
+        time: formData.time,
+        status: 'scheduled',
+        createdAt: new Date().toISOString()
+      };
+
+      // Guardar en localStorage
+      appointmentStorage.saveAppointment(newAppointment);
+      
+      // Actualizar estado local
+      setAppointments(prev => [...prev, newAppointment]);
+      
+      // Mostrar mensaje de éxito y resetear
+      alert('¡Cita agendada exitosamente!');
+      setCurrentView('appointments');
+      setSelectedService(undefined);
+    } catch (error) {
+      console.error('Error al agendar la cita:', error);
+      alert('Error al agendar la cita. Por favor intenta de nuevo.');
+    }
+  };
+
+  const handleCancelAppointment = (appointmentId: string) => {
+    if (window.confirm('¿Estás seguro de que quieres cancelar esta cita?')) {
+      try {
+        appointmentStorage.cancelAppointment(appointmentId);
+        setAppointments(prev => 
+          prev.map(apt => 
+            apt.id === appointmentId 
+              ? { ...apt, status: 'cancelled' as const }
+              : apt
+          )
+        );
+        alert('Cita cancelada exitosamente.');
+      } catch (error) {
+        console.error('Error al cancelar la cita:', error);
+        alert('Error al cancelar la cita. Por favor intenta de nuevo.');
+      }
+    }
+  };
+
+  const handleBackToServices = () => {
+    setSelectedService(undefined);
+    setCurrentView('services');
+  };
+
+  if (loading) {
+    return (
+      <div className="app loading">
+        <div className="loading-message">Cargando...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app">
+      <BusinessHeader business={businessInfo} />
+      
+      <nav className="main-nav">
+        <button 
+          className={currentView === 'services' ? 'active' : ''}
+          onClick={() => setCurrentView('services')}
+        >
+          Servicios
+        </button>
+        <button 
+          className={currentView === 'appointments' ? 'active' : ''}
+          onClick={() => setCurrentView('appointments')}
+        >
+          Mis Citas ({appointments.filter(apt => apt.status === 'scheduled').length})
+        </button>
+      </nav>
+
+      <main className="main-content">
+        {currentView === 'services' && (
+          <ServiceList 
+            services={services}
+            onServiceSelect={handleServiceSelect}
+            selectedService={selectedService}
+          />
+        )}
+
+        {currentView === 'booking' && selectedService && (
+          <AppointmentForm
+            selectedService={selectedService}
+            onSubmit={handleAppointmentSubmit}
+            onCancel={handleBackToServices}
+          />
+        )}
+
+        {currentView === 'appointments' && (
+          <AppointmentList 
+            appointments={appointments}
+            onCancelAppointment={handleCancelAppointment}
+          />
+        )}
+      </main>
+
+      <footer className="app-footer">
+        <p>© 2024 {businessInfo.name}. Todos los derechos reservados.</p>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
