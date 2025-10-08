@@ -6,6 +6,8 @@ import BusinessHeader from './components/BusinessHeader';
 import ServiceList from './components/ServiceList';
 import AppointmentForm from './components/AppointmentForm';
 import AppointmentList from './components/AppointmentList';
+import ConfirmModal from './components/ConfirmModal';
+import Notification from './components/Notification';
 import './App.css';
 
 function App() {
@@ -14,6 +16,22 @@ function App() {
   const [selectedService, setSelectedService] = useState<Service | undefined>();
   const [currentView, setCurrentView] = useState<'services' | 'booking' | 'appointments'>('services');
   const [loading, setLoading] = useState(false);
+  
+  // Estados para modal de confirmación
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    appointmentId: ''
+  });
+  
+  // Estados para notificaciones
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    message: '',
+    type: 'success' as 'success' | 'error' | 'info'
+  });
 
   // Cargar servicios y citas al iniciar la aplicación
   useEffect(() => {
@@ -62,32 +80,64 @@ function App() {
       // Actualizar estado local
       setAppointments(prev => [...prev, newAppointment]);
       
-      // Mostrar mensaje de éxito y resetear
-      alert('¡Cita agendada exitosamente!');
+      // Mostrar notificación de éxito
+      setNotification({
+        isOpen: true,
+        message: '¡Cita agendada exitosamente!',
+        type: 'success'
+      });
+      
+      // Cambiar vista y resetear
       setCurrentView('appointments');
       setSelectedService(undefined);
     } catch (error) {
       console.error('Error al agendar la cita:', error);
-      alert('Error al agendar la cita. Por favor intenta de nuevo.');
+      setNotification({
+        isOpen: true,
+        message: 'Error al agendar la cita. Por favor intenta de nuevo.',
+        type: 'error'
+      });
     }
   };
 
   const handleCancelAppointment = (appointmentId: string) => {
-    if (window.confirm('¿Estás seguro de que quieres cancelar esta cita?')) {
-      try {
-        appointmentStorage.cancelAppointment(appointmentId);
-        setAppointments(prev => 
-          prev.map(apt => 
-            apt.id === appointmentId 
-              ? { ...apt, status: 'cancelled' as const }
-              : apt
-          )
-        );
-        alert('Cita cancelada exitosamente.');
-      } catch (error) {
-        console.error('Error al cancelar la cita:', error);
-        alert('Error al cancelar la cita. Por favor intenta de nuevo.');
-      }
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    if (!appointment) return;
+
+    setConfirmModal({
+      isOpen: true,
+      title: 'Cancelar Cita',
+      message: `¿Estás seguro de que quieres cancelar la cita de ${appointment.serviceName}?`,
+      onConfirm: () => confirmCancelAppointment(appointmentId),
+      appointmentId
+    });
+  };
+
+  const confirmCancelAppointment = (appointmentId: string) => {
+    try {
+      appointmentStorage.cancelAppointment(appointmentId);
+      setAppointments(prev => 
+        prev.map(apt => 
+          apt.id === appointmentId 
+            ? { ...apt, status: 'cancelled' as const }
+            : apt
+        )
+      );
+      
+      setNotification({
+        isOpen: true,
+        message: 'Cita cancelada exitosamente.',
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error al cancelar la cita:', error);
+      setNotification({
+        isOpen: true,
+        message: 'Error al cancelar la cita. Por favor intenta de nuevo.',
+        type: 'error'
+      });
+    } finally {
+      setConfirmModal(prev => ({ ...prev, isOpen: false }));
     }
   };
 
@@ -151,6 +201,26 @@ function App() {
       <footer className="app-footer">
         <p>© 2024 {businessInfo.name}. Todos los derechos reservados.</p>
       </footer>
+
+      {/* Modal de confirmación */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        confirmText="Sí, cancelar"
+        cancelText="No, mantener"
+        type="danger"
+      />
+
+      {/* Notificaciones */}
+      <Notification
+        isOpen={notification.isOpen}
+        message={notification.message}
+        type={notification.type}
+        onClose={() => setNotification(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

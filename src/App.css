@@ -61,6 +61,57 @@ body {
   font-size: 1.1rem;
 }
 
+/* Contact info styling */
+.contact-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0.5rem 0;
+  flex-wrap: wrap;
+}
+
+.phone-display {
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+.contact-label {
+  opacity: 0.9;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.whatsapp-link {
+  background: #25D366;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3);
+  border: 2px solid transparent;
+}
+
+.whatsapp-link:hover {
+  background: #128C7E;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+  color: white;
+  text-decoration: none;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.whatsapp-icon {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
 /* Navigation */
 .main-nav {
   background: white;
@@ -428,6 +479,208 @@ body {
   margin-top: auto;
 }
 
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  margin: 1rem;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 1.5rem 1.5rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.modal-message {
+  margin: 0;
+  color: #666;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+.modal-actions {
+  padding: 1rem 1.5rem 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-modal-cancel,
+.btn-modal-confirm {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.btn-modal-cancel {
+  background: #f8f9fa;
+  color: #6c757d;
+  border: 2px solid #e9ecef;
+}
+
+.btn-modal-cancel:hover {
+  background: #e9ecef;
+  border-color: #ddd;
+}
+
+.btn-modal-confirm.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-modal-confirm.btn-primary:hover {
+  background: #5a6fd8;
+}
+
+.btn-modal-confirm.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-modal-confirm.btn-danger:hover {
+  background: #c82333;
+}
+
+.modal-danger .modal-icon {
+  color: #dc3545;
+}
+
+.modal-warning .modal-icon {
+  color: #ffc107;
+}
+
+.modal-info .modal-icon {
+  color: #17a2b8;
+}
+
+/* Notification Styles */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1100;
+  min-width: 300px;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: notificationSlideIn 0.3s ease-out;
+}
+
+@keyframes notificationSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  gap: 0.75rem;
+}
+
+.notification-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.notification-message {
+  flex: 1;
+  font-weight: 500;
+  color: white;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+}
+
+.notification-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.notification-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.notification-error {
+  background: linear-gradient(135deg, #dc3545, #e74c3c);
+}
+
+.notification-info {
+  background: linear-gradient(135deg, #17a2b8, #3498db);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .business-info {
@@ -437,6 +690,18 @@ body {
 
   .details h1 {
     font-size: 2rem;
+  }
+
+  /* Contact info responsive */
+  .contact-info {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .whatsapp-link {
+    align-self: center;
   }
 
   .services-grid {
@@ -469,5 +734,28 @@ body {
   .btn-cancel,
   .btn-submit {
     width: 100%;
+  }
+
+  /* Modal responsive */
+  .modal-content {
+    width: 95%;
+    margin: 0.5rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn-modal-cancel,
+  .btn-modal-confirm {
+    width: 100%;
+  }
+
+  /* Notification responsive */
+  .notification {
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
   }
 }
