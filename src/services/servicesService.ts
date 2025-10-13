@@ -1,60 +1,38 @@
 import type { Service } from '../types';
 import { supabase } from '../lib/supabase';
 
-// Tipo para los datos de servicios desde Supabase
+/**
+ * Services Service Module
+ * 
+ * Handles service data retrieval from Supabase database with proper error
+ * handling and data transformation. Provides a clean interface for service
+ * operations throughout the application.
+ */
+
+// Type definition for service data structure from Supabase
 interface SupabaseService {
-  id: number;
-  name: string;
-  description: string | null;
-  duration_minutes: number | null;
-  price: number | null;
-  category: string | null;
+  id: number;                    // Primary key from database
+  name: string;                  // Service name
+  description: string | null;    // Optional service description
+  duration_minutes: number | null; // Service duration in minutes
+  price: number | null;          // Service price
+  category: string | null;       // Optional service category
 }
 
-// Servicios de respaldo (mock data)
-export const mockServices: Service[] = [
-  {
-    id: "1",
-    name: "Corte de Cabello",
-    description: "Corte profesional con lavado y secado",
-    duration: 60,
-    price: 25000
-  },
-  {
-    id: "2",
-    name: "Manicure Completa",
-    description: "Manicure con esmaltado y decoración",
-    duration: 45,
-    price: 18000
-  },
-  {
-    id: "3",
-    name: "Facial Hidratante",
-    description: "Tratamiento facial completo con masaje",
-    duration: 90,
-    price: 35000
-  },
-  {
-    id: "4",
-    name: "Masaje Relajante",
-    description: "Masaje corporal de 60 minutos",
-    duration: 60,
-    price: 40000
-  },
-  {
-    id: "5",
-    name: "Depilación Cejas",
-    description: "Perfilado y depilación de cejas",
-    duration: 30,
-    price: 12000
-  }
-];
-
-// Función para cargar servicios desde Supabase
+/**
+ * Fetch services from Supabase database
+ * 
+ * Retrieves all available services from the database, ordered by name.
+ * Transforms database records to application format and handles various
+ * error scenarios with appropriate fallbacks.
+ * 
+ * @returns Promise<Service[]> - Array of formatted service objects
+ */
 export const fetchServices = async (): Promise<Service[]> => {
   try {
     console.log('📋 Cargando servicios desde Supabase...');
     
+    // Query services table with name ordering
     const { data, error } = await supabase
       .from('services')
       .select('*')
@@ -62,22 +40,22 @@ export const fetchServices = async (): Promise<Service[]> => {
     
     if (error) {
       console.error('Error al cargar servicios desde Supabase:', error);
-      console.log('🔄 Usando servicios mock como respaldo');
-      return mockServices;
+      console.log('❌ No se pudieron cargar los servicios');
+      return [];
     }
     
     if (!data || data.length === 0) {
-      console.log('⚠️ No se encontraron servicios en Supabase, usando servicios mock');
-      return mockServices;
+      console.log('⚠️ No se encontraron servicios en Supabase');
+      return [];
     }
     
-    // Mapear los datos de Supabase al formato de la aplicación
+    // Transform Supabase data to application format
     const services: Service[] = data.map((service: SupabaseService) => ({
-      id: service.id.toString(),
-      name: service.name,
-      description: service.description || '',
-      duration: service.duration_minutes || 60,
-      price: service.price || 0
+      id: service.id.toString(),                    // Convert ID to string
+      name: service.name,                          // Service name
+      description: service.description || '',      // Description with fallback
+      duration: service.duration_minutes || 60,    // Duration with default
+      price: service.price || 0                    // Price with fallback
     }));
     
     console.log(`✅ Cargados ${services.length} servicios desde Supabase`);
@@ -85,9 +63,10 @@ export const fetchServices = async (): Promise<Service[]> => {
     
   } catch (error) {
     console.error('Error de conexión al cargar servicios:', error);
-    console.log('🔄 Usando servicios mock como respaldo');
-    return mockServices;
+    console.log('❌ Error de conexión con la base de datos');
+    return [];
   }
 };
 
-export default { fetchServices, mockServices };
+// Export only the fetchServices function
+export default { fetchServices };
