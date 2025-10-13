@@ -222,6 +222,7 @@ body {
 
 .duration {
   color: #667eea;
+  font-weight: 600;
 }
 
 .price {
@@ -443,16 +444,22 @@ body {
 .status-scheduled {
   background: #d1ecf1;
   color: #0c5460;
+  border: 1px solid #0dcaf0;
+  font-weight: 600;
 }
 
 .status-completed {
   background: #d4edda;
   color: #155724;
+  border: 1px solid #198754;
+  font-weight: 600;
 }
 
 .status-cancelled {
   background: #f8d7da;
   color: #721c24;
+  border: 1px solid #dc3545;
+  font-weight: 600;
 }
 
 .btn-cancel-appointment {
@@ -758,4 +765,282 @@ body {
     min-width: auto;
     max-width: none;
   }
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode-toggle.dark {
+  background: #343a40;
+  border-color: #495057;
+  color: #ffc107;
+}
+
+.dark-mode-toggle.light {
+  background: #fff;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.dark-mode-toggle:hover .toggle-icon {
+  transform: rotate(20deg);
+}
+
+/* Dark Mode Variables */
+:root {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --border-color: #e9ecef;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --gradient-start: #667eea;
+  --gradient-end: #764ba2;
+}
+
+:root.dark-mode {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --text-primary: #e9ecef;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --gradient-start: #4a5568;
+  --gradient-end: #2d3748;
+}
+
+/* Apply dark mode variables */
+.dark-mode body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark-mode .app {
+  background-color: var(--bg-primary);
+}
+
+/* Business Header Dark Mode */
+.dark-mode .business-header {
+  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+}
+
+/* Navigation Dark Mode */
+.dark-mode .main-nav {
+  background: var(--bg-secondary);
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.dark-mode .main-nav button {
+  color: var(--text-primary);
+}
+
+.dark-mode .main-nav button:hover,
+.dark-mode .main-nav button.active {
+  color: #0dcaf0;
+  border-bottom-color: #0dcaf0;
+}
+
+/* Cards and Components Dark Mode */
+.dark-mode .service-card {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.dark-mode .service-card h3 {
+  color: var(--text-primary);
+}
+
+.dark-mode .service-card .description {
+  color: var(--text-secondary);
+}
+
+/* Service List Titles */
+.dark-mode .service-list h2 {
+  color: var(--text-primary);
+}
+
+/* Time Slot Selector */
+.dark-mode .time-slot-selector h3 {
+  color: var(--text-primary);
+}
+
+.dark-mode .time-slots-loading {
+  color: var(--text-secondary);
+}
+
+.dark-mode .no-slots,
+.dark-mode .no-available-slots {
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+}
+
+/* Appointment List Headers */
+.dark-mode .appointment-list h2,
+.dark-mode .appointment-list h3 {
+  color: var(--text-primary);
+}
+
+.dark-mode .no-appointments {
+  color: var(--text-secondary);
+}
+
+.dark-mode .appointments-section h3 {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+.dark-mode .appointment-form {
+  background: var(--bg-secondary);
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.dark-mode .appointment-form h2 {
+  color: var(--text-primary);
+}
+
+.dark-mode .form-group input {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-mode .form-group input:focus {
+  border-color: var(--gradient-start);
+}
+
+.dark-mode .form-group label {
+  color: var(--text-primary);
+}
+
+.dark-mode .appointment-card {
+  background: var(--bg-secondary);
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.dark-mode .appointment-info h4 {
+  color: var(--text-primary);
+}
+
+.dark-mode .appointment-info p {
+  color: var(--text-secondary);
+}
+
+.dark-mode .time-slot {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.dark-mode .time-slot:hover {
+  border-color: var(--gradient-start);
+  background: var(--bg-primary);
+}
+
+/* Modal Dark Mode */
+.dark-mode .modal-content {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dark-mode .modal-title {
+  color: var(--text-primary);
+}
+
+.dark-mode .modal-message {
+  color: var(--text-secondary);
+}
+
+.dark-mode .btn-modal-cancel {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+.dark-mode .btn-modal-cancel:hover {
+  background: var(--border-color);
+}
+
+/* Footer Dark Mode */
+.dark-mode .app-footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Loading State */
+.dark-mode .loading-message {
+  color: var(--gradient-start);
+}
+
+/* Contact Label */
+.dark-mode .contact-label {
+  color: var(--text-secondary);
+}
+
+/* Error Messages */
+.dark-mode .error-message {
+  color: #ff6b6b;
+}
+
+.dark-mode .form-group input.error {
+  border-color: #ff6b6b;
+}
+
+/* Status badges maintain their colors but adjust background */
+.dark-mode .status-scheduled {
+  background: rgba(13, 202, 240, 0.25);
+  color: #0dcaf0;
+  border: 1px solid #0dcaf0;
+  font-weight: 700;
+}
+
+.dark-mode .status-completed {
+  background: rgba(25, 135, 84, 0.25);
+  color: #20c997;
+  border: 1px solid #20c997;
+  font-weight: 700;
+}
+
+.dark-mode .status-cancelled {
+  background: rgba(220, 53, 69, 0.35);
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+  font-weight: 700;
+}
+
+/* Duration and Price Colors */
+.dark-mode .duration {
+  color: #0dcaf0;
+  font-weight: 600;
+}
+
+.dark-mode .price {
+  color: #20c997;
+  font-weight: 600;
 }

@@ -8,6 +8,7 @@ import AppointmentForm from './components/AppointmentForm';
 import AppointmentList from './components/AppointmentList';
 import ConfirmModal from './components/ConfirmModal';
 import Notification from './components/Notification';
+import DarkModeToggle from './components/DarkModeToggle';
 import './App.css';
 
 function App() {
@@ -32,6 +33,22 @@ function App() {
     message: '',
     type: 'success' as 'success' | 'error' | 'info'
   });
+
+  // Estado para modo oscuro
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  // Efecto para aplicar el modo oscuro
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark-mode', isDarkMode);
+    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev: boolean) => !prev);
+  };
 
   // Cargar servicios y citas al iniciar la aplicación
   useEffect(() => {
@@ -157,6 +174,8 @@ function App() {
   return (
     <div className="app">
       <BusinessHeader business={businessInfo} />
+      
+      <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
       
       <nav className="main-nav">
         <button 

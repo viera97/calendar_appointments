@@ -30,7 +30,7 @@ const BusinessHeader: React.FC<BusinessHeaderProps> = ({ business }) => {
   return (
     <header className="business-header">
       <div className="business-info">
-        <div className="logo">{business.logo}</div>
+        {/* <div className="logo">{business.logo}</div> */}
         <div className="details">
           <h1>{business.name}</h1>
           <div className="contact-info">
