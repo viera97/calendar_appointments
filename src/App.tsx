@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { Service, Appointment, AppointmentFormData } from './types';
 import { businessInfo, fetchServices } from './services/mockApi';
 import { appointmentStorage, generateAppointmentId } from './services/appointmentStorage';
+import { testConnection } from './lib/supabase';
 import BusinessHeader from './components/BusinessHeader';
 import ServiceList from './components/ServiceList';
 import AppointmentForm from './components/AppointmentForm';
@@ -55,6 +56,15 @@ function App() {
     const loadData = async () => {
       setLoading(true);
       try {
+        // Probar conexión a Supabase
+        console.log('🔗 Probando conexión a Supabase...');
+        const isConnected = await testConnection();
+        if (isConnected) {
+          console.log('✅ Conexión a Supabase establecida correctamente');
+        } else {
+          console.log('❌ Error al conectar con Supabase');
+        }
+        
         // Cargar servicios desde API mock
         const servicesData = await fetchServices();
         setServices(servicesData);

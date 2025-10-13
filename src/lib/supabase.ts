@@ -16,18 +16,55 @@ if (!supabaseAnonKey) {
 // Crear y exportar el cliente de Supabase
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Variable para evitar múltiples pruebas de conexión
+let connectionTested = false
+
+// Función para contar registros en la tabla customers
+export const getCustomersCount = async () => {
+  try {
+    const { count, error } = await supabase
+      .from('customers')
+      .select('*', { count: 'exact', head: true })
+    
+    if (error) {
+      console.error('Error al obtener cantidad de customers:', error)
+      return null
+    }
+    
+    console.log(`📊 Cantidad de registros en la tabla 'customers': ${count}`)
+    return count
+  } catch (error) {
+    console.error('Error al conectar con la tabla customers:', error)
+    return null
+  }
+}
+
 // Opcional: Función helper para verificar la conexión
 export const testConnection = async () => {
+  // Evitar múltiples pruebas de conexión
+  if (connectionTested) {
+    return true
+  }
+
   try {
-    const { error } = await supabase.from('_supabase_migrations').select('version').limit(1)
-    if (error && error.code !== 'PGRST116') { // PGRST116 = table doesn't exist, which is ok
-      console.error('Supabase connection error:', error)
+    console.log('🔗 Probando conexión a Supabase...')
+    connectionTested = true
+    
+    // Probar conexión con una consulta simple sin mostrar datos
+    const { error } = await supabase
+      .from('customers')
+      .select('id', { count: 'exact', head: true })
+      .limit(1)
+    
+    if (error) {
+      console.error('❌ Error al conectar con Supabase')
       return false
     }
-    console.log('Supabase connection successful')
+    
+    console.log('✅ Conexión a Supabase establecida correctamente')
     return true
-  } catch (error) {
-    console.error('Supabase connection test failed:', error)
+  } catch {
+    console.error('❌ Error al conectar con Supabase')
     return false
   }
 }
