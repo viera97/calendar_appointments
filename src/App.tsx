@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Service, Appointment, AppointmentFormData } from './types';
-import { businessInfo, fetchServices } from './services/mockApi';
+import { businessInfo } from './services/businessService';
+import { fetchServices } from './services/servicesService';
 import { appointmentStorage, generateAppointmentId } from './services/appointmentStorage';
 import { testConnection } from './lib/supabase';
 import BusinessHeader from './components/BusinessHeader';

@@ -1,5 +1,5 @@
 import type { Appointment } from '../types';
-import { formatTime } from '../services/mockApi';
+import { formatTime } from '../services/utils';
 
 interface AppointmentListProps {
   appointments: Appointment[];
