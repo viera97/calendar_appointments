@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
-import type { Service, Appointment } from '../types';
+import type { Service, Appointment, Business } from '../types';
 import { fetchServices } from '../services/servicesService';
+import { fetchBusinessInfo } from '../services/businessService';
 import { appointmentStorage } from '../services/appointmentStorage';
 import { testConnection } from '../lib/supabase';
 
 /**
  * Custom Hook for Application Data Management
  * 
- * Handles loading and management of services and appointments data.
+ * Handles loading and management of services, appointments, and business data.
  * Provides centralized state management for the main application entities
  * with proper error handling and loading states.
  */
 export const useAppData = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [businessInfo, setBusinessInfo] = useState<Business | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Load initial data on component mount
@@ -30,9 +32,14 @@ export const useAppData = () => {
           console.log('❌ Error al conectar con Supabase');
         }
         
-        // Load services from API
-        const servicesData = await fetchServices();
+        // Load data in parallel for better performance
+        const [servicesData, businessData] = await Promise.all([
+          fetchServices(),
+          fetchBusinessInfo()
+        ]);
+        
         setServices(servicesData);
+        setBusinessInfo(businessData);
         
         // Load appointments from localStorage
         const storedAppointments = appointmentStorage.getAppointments();
@@ -73,6 +80,7 @@ export const useAppData = () => {
   return {
     services,
     appointments,
+    businessInfo,
     loading,
     addAppointment,
     updateAppointment

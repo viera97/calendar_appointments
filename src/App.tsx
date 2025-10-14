@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import type { Service } from './types';
-import { businessInfo } from './services/businessService';
 import BusinessHeader from './components/BusinessHeader';
 import MainNavigation from './components/MainNavigation';
 import MainContent from './components/MainContent';
@@ -27,7 +26,7 @@ function App() {
   const [selectedService, setSelectedService] = useState<Service | undefined>();
 
   // Custom hooks for state management
-  const { services, appointments, loading, addAppointment, updateAppointment } = useAppData();
+  const { services, appointments, businessInfo, loading, addAppointment, updateAppointment } = useAppData();
   const { notification, showSuccess, showError, closeNotification } = useNotifications();
   const { confirmModal, showConfirmModal, closeConfirmModal } = useConfirmModal();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -70,7 +69,7 @@ function App() {
   };
 
   // Show loading state
-  if (loading) {
+  if (loading || !businessInfo) {
     return (
       <div className="app loading">
         <div className="loading-message">Cargando...</div>
@@ -110,7 +109,7 @@ function App() {
 
       {/* Application footer */}
       <footer className="app-footer">
-        <p>© 2024 {businessInfo.name}. Todos los derechos reservados.</p>
+        <p>© 2024 {businessInfo?.name || 'Negocio'}. Todos los derechos reservados.</p>
       </footer>
 
       {/* Confirmation modal for user actions */}
