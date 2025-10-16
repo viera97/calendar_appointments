@@ -1,12 +1,13 @@
 import type { Service, Appointment, AppointmentFormData } from '../types';
 import { appointmentStorage, generateAppointmentId } from '../services/appointmentStorage';
+import { useGoogleCalendar } from './useGoogleCalendar';
 
 /**
  * Custom Hook for Appointment Management Logic
  * 
  * Handles the business logic for appointment operations including
  * creation, cancellation, and storage management. Provides callbacks
- * for UI interaction with proper error handling.
+ * for UI interaction with proper error handling and Google Calendar integration.
  */
 
 // Hook parameters interface
@@ -32,11 +33,14 @@ export const useAppointmentActions = ({
   setSelectedService
 }: UseAppointmentActionsParams) => {
 
+  // Google Calendar integration
+  const { isAuthenticated, createEvent } = useGoogleCalendar();
+
   /**
-   * Handle appointment form submission
+   * Handle appointment form submission with Google Calendar integration
    * @param formData - Form data from appointment booking
    */
-  const handleAppointmentSubmit = (formData: AppointmentFormData) => {
+  const handleAppointmentSubmit = async (formData: AppointmentFormData) => {
     try {
       const newAppointment: Appointment = {
         id: generateAppointmentId(),
@@ -50,18 +54,26 @@ export const useAppointmentActions = ({
         createdAt: new Date().toISOString()
       };
 
-      // Save to localStorage
+      // Save appointment locally/database first
       appointmentStorage.saveAppointment(newAppointment);
-      
-      // Update local state
       addAppointment(newAppointment);
-      
-      // Show success notification
-      showSuccess('¡Cita agendada exitosamente!');
-      
-      // Navigate to appointments view and reset
-      setCurrentView('appointments');
+
+      // If authenticated with Google Calendar, sync the appointment
+      if (isAuthenticated) {
+        try {
+          await createEvent(newAppointment);
+          showSuccess(`Cita agendada exitosamente y sincronizada con Google Calendar para ${formData.date} a las ${formData.time}.`);
+        } catch (error) {
+          console.error('Error syncing with Google Calendar:', error);
+          showSuccess(`Cita agendada exitosamente para ${formData.date} a las ${formData.time}, pero no se pudo sincronizar con Google Calendar.`);
+        }
+      } else {
+        showSuccess(`Cita agendada exitosamente para ${formData.date} a las ${formData.time}.`);
+      }
+
+      // Navigate back to services view
       setSelectedService(undefined);
+      setCurrentView('services');
     } catch (error) {
       console.error('Error al agendar la cita:', error);
       showError('Error al agendar la cita. Por favor intenta de nuevo.');
