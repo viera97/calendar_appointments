@@ -130,6 +130,23 @@ export const appointmentStorage = {
     } catch (error) {
       console.error('Error al limpiar las citas:', error);
     }
+  },
+
+  /**
+   * Clear appointment history (completed and cancelled appointments only)
+   * 
+   * Removes only completed and cancelled appointments from storage,
+   * keeping scheduled appointments intact.
+   */
+  clearHistory: (): void => {
+    try {
+      const appointments = appointmentStorage.getAppointments();
+      const scheduledAppointments = appointments.filter(apt => apt.status === 'scheduled');
+      localStorage.setItem(APPOINTMENTS_KEY, JSON.stringify(scheduledAppointments));
+    } catch (error) {
+      console.error('Error al limpiar el historial:', error);
+      throw new Error('No se pudo limpiar el historial');
+    }
   }
 };
 

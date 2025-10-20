@@ -15,6 +15,8 @@ interface ConfirmModalState {
   message: string;
   onConfirm: () => void;
   appointmentId: string;
+  confirmText: string;
+  cancelText: string;
 }
 
 export const useConfirmModal = () => {
@@ -23,7 +25,9 @@ export const useConfirmModal = () => {
     title: '',
     message: '',
     onConfirm: () => {},
-    appointmentId: ''
+    appointmentId: '',
+    confirmText: 'Confirmar',
+    cancelText: 'Cancelar'
   });
 
   /**
@@ -32,19 +36,25 @@ export const useConfirmModal = () => {
    * @param message - Confirmation message
    * @param onConfirm - Callback function when user confirms
    * @param appointmentId - Optional appointment ID for context
+   * @param confirmText - Optional text for confirm button
+   * @param cancelText - Optional text for cancel button
    */
   const showConfirmModal = (
     title: string, 
     message: string, 
     onConfirm: () => void, 
-    appointmentId: string = ''
+    appointmentId: string = '',
+    confirmText: string = 'Confirmar',
+    cancelText: string = 'Cancelar'
   ) => {
     setConfirmModal({
       isOpen: true,
       title,
       message,
       onConfirm,
-      appointmentId
+      appointmentId,
+      confirmText,
+      cancelText
     });
   };
 

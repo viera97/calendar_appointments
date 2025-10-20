@@ -22,6 +22,7 @@ interface MainContentProps {
   onAppointmentSubmit: (formData: AppointmentFormData) => void | Promise<void>; // Appointment submission callback
   onCancelAppointment: (appointmentId: string) => void;     // Appointment cancellation callback
   onBackToServices: () => void;                             // Back navigation callback
+  onClearHistory?: () => void;                              // Clear history callback
   isCreatingAppointment?: boolean;                          // Loading state for appointment creation
 }
 
@@ -34,6 +35,7 @@ const MainContent: React.FC<MainContentProps> = ({
   onAppointmentSubmit,
   onCancelAppointment,
   onBackToServices,
+  onClearHistory,
   isCreatingAppointment
 }) => {
   return (
@@ -62,6 +64,7 @@ const MainContent: React.FC<MainContentProps> = ({
         <AppointmentList 
           appointments={appointments}
           onCancelAppointment={onCancelAppointment}
+          onClearHistory={onClearHistory}
         />
       )}
     </main>

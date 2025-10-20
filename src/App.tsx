@@ -27,19 +27,21 @@ function App() {
   const [selectedService, setSelectedService] = useState<Service | undefined>();
 
   // Custom hooks for state management
-  const { services, appointments, businessInfo, loading, addAppointment, updateAppointment } = useAppData();
+  const { services, appointments, businessInfo, loading, addAppointment, updateAppointment, clearHistory } = useAppData();
   const { notification, showSuccess, showError, closeNotification } = useNotifications();
   const { confirmModal, showConfirmModal, closeConfirmModal } = useConfirmModal();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   // Appointment actions hook with all dependencies
-  const { handleAppointmentSubmit, handleCancelAppointment, handleBackToServices, isCreatingAppointment } = useAppointmentActions({
+  const { handleAppointmentSubmit, handleCancelAppointment, handleBackToServices, handleClearHistory, isCreatingAppointment } = useAppointmentActions({
     selectedService,
     addAppointment,
     updateAppointment,
+    clearHistory,
     showSuccess,
     showError,
     showConfirmModal,
+    closeConfirmModal,
     setCurrentView,
     setSelectedService
   });
@@ -109,6 +111,7 @@ function App() {
         onAppointmentSubmit={handleAppointmentSubmit}
         onCancelAppointment={handleAppointmentCancel}
         onBackToServices={handleBackToServices}
+        onClearHistory={handleClearHistory}
         isCreatingAppointment={isCreatingAppointment}
       />
 
@@ -124,8 +127,8 @@ function App() {
         message={confirmModal.message}
         onConfirm={confirmModal.onConfirm}
         onCancel={closeConfirmModal}
-        confirmText="Sí, cancelar"
-        cancelText="No, mantener"
+        confirmText={confirmModal.confirmText}
+        cancelText={confirmModal.cancelText}
         type="danger"
       />
 

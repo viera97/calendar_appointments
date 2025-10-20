@@ -16,9 +16,11 @@ interface UseAppointmentActionsParams {
   selectedService: Service | undefined;
   addAppointment: (appointment: Appointment) => void;
   updateAppointment: (id: string, updates: Partial<Appointment>) => void;
+  clearHistory: () => void;
   showSuccess: (message: string) => void;
   showError: (message: string) => void;
-  showConfirmModal: (title: string, message: string, onConfirm: () => void) => void;
+  showConfirmModal: (title: string, message: string, onConfirm: () => void, appointmentId?: string, confirmText?: string, cancelText?: string) => void;
+  closeConfirmModal: () => void;
   setCurrentView: (view: 'services' | 'booking' | 'appointments') => void;
   setSelectedService: (service: Service | undefined) => void;
 }
@@ -27,9 +29,11 @@ export const useAppointmentActions = ({
   selectedService,
   addAppointment,
   updateAppointment,
+  clearHistory,
   showSuccess,
   showError,
   showConfirmModal,
+  closeConfirmModal,
   setCurrentView,
   setSelectedService
 }: UseAppointmentActionsParams) => {
@@ -107,7 +111,10 @@ export const useAppointmentActions = ({
     showConfirmModal(
       'Cancelar Cita',
       `¿Estás seguro de que quieres cancelar la cita de ${appointment.serviceName}?`,
-      () => confirmCancelAppointment(appointmentId)
+      () => confirmCancelAppointment(appointmentId),
+      appointmentId,
+      'Sí, cancelar',
+      'No, mantener'
     );
   };
 
@@ -128,9 +135,13 @@ export const useAppointmentActions = ({
         console.error('Error removing from business calendar:', error);
         showSuccess('Cita cancelada exitosamente, pero no se pudo remover del calendario del negocio.');
       }
+      
+      // Close the confirmation modal
+      closeConfirmModal();
     } catch (error) {
       console.error('Error al cancelar la cita:', error);
       showError('Error al cancelar la cita. Por favor intenta de nuevo.');
+      closeConfirmModal();
     }
   };
 
@@ -142,10 +153,40 @@ export const useAppointmentActions = ({
     setCurrentView('services');
   };
 
+  /**
+   * Handle history clear request with confirmation
+   */
+  const handleClearHistory = () => {
+    showConfirmModal(
+      'Limpiar Historial',
+      '¿Estás seguro de que quieres eliminar todo el historial de citas? Esta acción no se puede deshacer.',
+      () => confirmClearHistory(),
+      '', // no appointmentId needed
+      'Sí, limpiar', // confirmText
+      'No, mantener' // cancelText
+    );
+  };
+
+  /**
+   * Confirm and execute history clearing
+   */
+  const confirmClearHistory = () => {
+    try {
+      clearHistory();
+      showSuccess('Historial eliminado exitosamente.');
+      closeConfirmModal();
+    } catch (error) {
+      console.error('Error al limpiar el historial:', error);
+      showError('Error al limpiar el historial. Por favor intenta de nuevo.');
+      closeConfirmModal();
+    }
+  };
+
   return {
     handleAppointmentSubmit,
     handleCancelAppointment,
     handleBackToServices,
+    handleClearHistory,
     isCreatingAppointment
   };
 };

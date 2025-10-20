@@ -129,12 +129,27 @@ export const useAppData = () => {
     );
   };
 
+  /**
+   * Clear appointment history (completed and cancelled appointments)
+   * Keeps scheduled appointments intact
+   */
+  const clearHistory = () => {
+    try {
+      appointmentStorage.clearHistory();
+      setAppointments(prev => prev.filter(apt => apt.status === 'scheduled'));
+    } catch (error) {
+      console.error('Error al limpiar el historial:', error);
+      throw error;
+    }
+  };
+
   return {
     services,
     appointments,
     businessInfo,
     loading,
     addAppointment,
-    updateAppointment
+    updateAppointment,
+    clearHistory
   };
 };

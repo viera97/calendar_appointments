@@ -14,11 +14,13 @@ import { formatTime } from '../services/utils';
 interface AppointmentListProps {
   appointments: Appointment[];                                    // Array of appointments to display
   onCancelAppointment?: (appointmentId: string) => void;        // Optional callback for appointment cancellation
+  onClearHistory?: () => void;                                   // Optional callback for clearing appointment history
 }
 
 const AppointmentList: React.FC<AppointmentListProps> = ({ 
   appointments, 
-  onCancelAppointment 
+  onCancelAppointment,
+  onClearHistory
 }) => {
   // Display empty state when no appointments exist
   if (appointments.length === 0) {
@@ -118,7 +120,18 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
       {/* Historical appointments section (completed/cancelled) */}
       {otherAppointments.length > 0 && (
         <div className="appointments-section">
-          <h3>Historial</h3>
+          <div className="section-header">
+            <h3>Historial</h3>
+            {onClearHistory && (
+              <button
+                onClick={onClearHistory}
+                className="btn-clear-history"
+                title="Eliminar todo el historial"
+              >
+                🗑️ Limpiar Historial
+              </button>
+            )}
+          </div>
           {otherAppointments.map((appointment) => (
             <div key={appointment.id} className="appointment-card">
               {/* Appointment details without action buttons */}
