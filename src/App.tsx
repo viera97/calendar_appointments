@@ -6,6 +6,7 @@ import MainContent from './components/MainContent';
 import ConfirmModal from './components/ConfirmModal';
 import Notification from './components/Notification';
 import DarkModeToggle from './components/DarkModeToggle';
+import { BusinessCalendarStatus } from './components/BusinessCalendarStatus';
 import { useAppData } from './hooks/useAppData';
 import { useNotifications } from './hooks/useNotifications';
 import { useConfirmModal } from './hooks/useConfirmModal';
@@ -87,6 +88,9 @@ function App() {
       
       {/* Dark mode toggle button */}
       <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
+      
+      {/* Business Calendar Status - shows configuration and instructions */}
+      <BusinessCalendarStatus />
       
       {/* Main navigation menu */}
       <MainNavigation 

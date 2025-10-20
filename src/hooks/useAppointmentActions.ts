@@ -1,13 +1,13 @@
 import type { Service, Appointment, AppointmentFormData } from '../types';
 import { appointmentStorage, generateAppointmentId } from '../services/appointmentStorage';
-import { useGoogleCalendar } from './useGoogleCalendar';
+import { addAppointmentToBusinessCalendar, removeAppointmentFromBusinessCalendar } from '../services/businessCalendarService';
 
 /**
  * Custom Hook for Appointment Management Logic
  * 
  * Handles the business logic for appointment operations including
  * creation, cancellation, and storage management. Provides callbacks
- * for UI interaction with proper error handling and Google Calendar integration.
+ * for UI interaction with proper error handling and business Google Calendar integration.
  */
 
 // Hook parameters interface
@@ -33,9 +33,6 @@ export const useAppointmentActions = ({
   setSelectedService
 }: UseAppointmentActionsParams) => {
 
-  // Google Calendar integration
-  const { isAuthenticated, createEvent } = useGoogleCalendar();
-
   /**
    * Handle appointment form submission with Google Calendar integration
    * @param formData - Form data from appointment booking
@@ -58,17 +55,13 @@ export const useAppointmentActions = ({
       appointmentStorage.saveAppointment(newAppointment);
       addAppointment(newAppointment);
 
-      // If authenticated with Google Calendar, sync the appointment
-      if (isAuthenticated) {
-        try {
-          await createEvent(newAppointment);
-          showSuccess(`Cita agendada exitosamente y sincronizada con Google Calendar para ${formData.date} a las ${formData.time}.`);
-        } catch (error) {
-          console.error('Error syncing with Google Calendar:', error);
-          showSuccess(`Cita agendada exitosamente para ${formData.date} a las ${formData.time}, pero no se pudo sincronizar con Google Calendar.`);
-        }
-      } else {
-        showSuccess(`Cita agendada exitosamente para ${formData.date} a las ${formData.time}.`);
+      // Add to business Google Calendar automatically
+      try {
+        await addAppointmentToBusinessCalendar(newAppointment);
+        showSuccess(`Cita agendada exitosamente y agregada al calendario del negocio para ${formData.date} a las ${formData.time}.`);
+      } catch (error) {
+        console.error('Error adding to business calendar:', error);
+        showSuccess(`Cita agendada exitosamente para ${formData.date} a las ${formData.time}, pero no se pudo agregar al calendario del negocio.`);
       }
 
       // Navigate back to services view
@@ -100,12 +93,19 @@ export const useAppointmentActions = ({
    * Confirm and execute appointment cancellation
    * @param appointmentId - ID of appointment to cancel
    */
-  const confirmCancelAppointment = (appointmentId: string) => {
+  const confirmCancelAppointment = async (appointmentId: string) => {
     try {
       appointmentStorage.cancelAppointment(appointmentId);
       updateAppointment(appointmentId, { status: 'cancelled' });
       
-      showSuccess('Cita cancelada exitosamente.');
+      // Remove from business Google Calendar
+      try {
+        await removeAppointmentFromBusinessCalendar(appointmentId);
+        showSuccess('Cita cancelada exitosamente y removida del calendario del negocio.');
+      } catch (error) {
+        console.error('Error removing from business calendar:', error);
+        showSuccess('Cita cancelada exitosamente, pero no se pudo remover del calendario del negocio.');
+      }
     } catch (error) {
       console.error('Error al cancelar la cita:', error);
       showError('Error al cancelar la cita. Por favor intenta de nuevo.');

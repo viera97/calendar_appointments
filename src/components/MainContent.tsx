@@ -19,7 +19,7 @@ interface MainContentProps {
   appointments: Appointment[];                               // User appointments
   selectedService: Service | undefined;                     // Currently selected service
   onServiceSelect: (service: Service) => void;              // Service selection callback
-  onAppointmentSubmit: (formData: AppointmentFormData) => void; // Appointment submission callback
+  onAppointmentSubmit: (formData: AppointmentFormData) => void | Promise<void>; // Appointment submission callback
   onCancelAppointment: (appointmentId: string) => void;     // Appointment cancellation callback
   onBackToServices: () => void;                             // Back navigation callback
 }

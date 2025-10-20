@@ -13,7 +13,7 @@ import TimeSlotSelector from './TimeSlotSelector';
 // Props interface for the appointment form component
 interface AppointmentFormProps {
   selectedService: Service;                              // Service to book the appointment for
-  onSubmit: (formData: AppointmentFormData) => void;    // Callback when form is successfully submitted
+  onSubmit: (formData: AppointmentFormData) => void | Promise<void>;    // Callback when form is successfully submitted
   onCancel: () => void;                                  // Callback when user cancels the form
 }
 
@@ -80,11 +80,15 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
    * Handle form submission with validation
    * @param e - Form submission event
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Only proceed with submission if all fields pass validation
     if (validateForm()) {
-      onSubmit(formData);
+      try {
+        await onSubmit(formData);
+      } catch (error) {
+        console.error('Error submitting appointment:', error);
+      }
     }
   };
 

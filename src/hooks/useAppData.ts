@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import type { Service, Appointment, Business } from '../types';
 import { fetchServices } from '../services/servicesService';
 import { fetchBusinessInfo } from '../services/businessService';
-import { appointmentStorage } from '../services/appointmentStorage';
+import { appointmentStorage, generateAppointmentId } from '../services/appointmentStorage';
 import { testConnection } from '../lib/supabase';
+import { addAppointmentToBusinessCalendar } from '../services/businessCalendarService';
 
 /**
  * Custom Hook for Application Data Management
@@ -44,6 +45,10 @@ export const useAppData = () => {
         // Load appointments from localStorage
         const storedAppointments = appointmentStorage.getAppointments();
         setAppointments(storedAppointments);
+
+        // Create test appointment for Google Calendar connection testing
+        await createTestGoogleCalendarAppointment();
+        
       } catch (error) {
         console.error('Error al cargar los datos:', error);
       } finally {
@@ -53,6 +58,53 @@ export const useAppData = () => {
 
     loadData();
   }, []);
+
+  /**
+   * Create a test appointment for Google Calendar integration testing
+   * Creates appointment for October 17, 2025 at 10:00 AM
+   */
+  const createTestGoogleCalendarAppointment = async () => {
+    try {
+      // Check if test appointment already exists
+      const existingAppointments = appointmentStorage.getAppointments();
+      const hasTestAppointment = existingAppointments.some(apt => 
+        apt.clientName === 'Prueba Google Calendar' && apt.date === '2025-10-17'
+      );
+      
+      if (hasTestAppointment) {
+        console.log('🧪 Test appointment for Google Calendar already exists');
+        return;
+      }
+
+      // Create test appointment
+      const testAppointment: Appointment = {
+        id: generateAppointmentId(),
+        clientName: 'Prueba Google Calendar',
+        clientPhone: '+57 300 123 4567',
+        serviceId: 'test-service-google',
+        serviceName: 'Prueba de Conexión Google Calendar',
+        date: '2025-10-17',
+        time: '10:00',
+        status: 'scheduled',
+        createdAt: new Date().toISOString()
+      };
+
+      // Save to local storage
+      appointmentStorage.saveAppointment(testAppointment);
+      setAppointments(prev => [...prev, testAppointment]);
+
+      // Try to add to Google Calendar
+      try {
+        await addAppointmentToBusinessCalendar(testAppointment);
+        console.log('✅ Test appointment added to Google Calendar successfully');
+      } catch (error) {
+        console.error('❌ Error adding test appointment to Google Calendar:', error);
+      }
+
+    } catch (error) {
+      console.error('Error creating test Google Calendar appointment:', error);
+    }
+  };
 
   /**
    * Add a new appointment to the state and storage
