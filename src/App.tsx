@@ -33,7 +33,7 @@ function App() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   // Appointment actions hook with all dependencies
-  const { handleAppointmentSubmit, handleCancelAppointment, handleBackToServices } = useAppointmentActions({
+  const { handleAppointmentSubmit, handleCancelAppointment, handleBackToServices, isCreatingAppointment } = useAppointmentActions({
     selectedService,
     addAppointment,
     updateAppointment,
@@ -109,6 +109,7 @@ function App() {
         onAppointmentSubmit={handleAppointmentSubmit}
         onCancelAppointment={handleAppointmentCancel}
         onBackToServices={handleBackToServices}
+        isCreatingAppointment={isCreatingAppointment}
       />
 
       {/* Application footer */}

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Service, Appointment, AppointmentFormData } from '../types';
 import { appointmentStorage, generateAppointmentId } from '../services/appointmentStorage';
 import { addAppointmentToBusinessCalendar, removeAppointmentFromBusinessCalendar } from '../services/businessCalendarService';
@@ -32,12 +33,16 @@ export const useAppointmentActions = ({
   setCurrentView,
   setSelectedService
 }: UseAppointmentActionsParams) => {
+  
+  // Loading state for appointment creation
+  const [isCreatingAppointment, setIsCreatingAppointment] = useState(false);
 
   /**
    * Handle appointment form submission with Google Calendar integration
    * @param formData - Form data from appointment booking
    */
   const handleAppointmentSubmit = async (formData: AppointmentFormData) => {
+    setIsCreatingAppointment(true);
     try {
       const newAppointment: Appointment = {
         id: generateAppointmentId(),
@@ -85,6 +90,8 @@ export const useAppointmentActions = ({
     } catch (error) {
       console.error('Error al agendar la cita:', error);
       showError('Error al agendar la cita. Por favor intenta de nuevo.');
+    } finally {
+      setIsCreatingAppointment(false);
     }
   };
 
@@ -138,6 +145,7 @@ export const useAppointmentActions = ({
   return {
     handleAppointmentSubmit,
     handleCancelAppointment,
-    handleBackToServices
+    handleBackToServices,
+    isCreatingAppointment
   };
 };

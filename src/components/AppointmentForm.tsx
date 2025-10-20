@@ -15,12 +15,14 @@ interface AppointmentFormProps {
   selectedService: Service;                              // Service to book the appointment for
   onSubmit: (formData: AppointmentFormData) => void | Promise<void>;    // Callback when form is successfully submitted
   onCancel: () => void;                                  // Callback when user cancels the form
+  isCreatingAppointment?: boolean;                       // Loading state for appointment creation
 }
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({
   selectedService,
   onSubmit,
-  onCancel
+  onCancel,
+  isCreatingAppointment = false
 }) => {
   // Form data state management with all required appointment fields
   const [formData, setFormData] = useState<AppointmentFormData>({
@@ -108,6 +110,17 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
   return (
     <div className="appointment-form">
+      {/* Loading overlay */}
+      {isCreatingAppointment && (
+        <div className="loading-overlay">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Agendando tu cita...</p>
+            <p className="loading-subtext">Por favor espera un momento</p>
+          </div>
+        </div>
+      )}
+      
       {/* Form header with service name */}
       <h2>Agendar Cita - {selectedService.name}</h2>
       
@@ -176,10 +189,10 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
           </button>
           <button 
             type="submit" 
-            className={`btn-submit ${!formData.time ? 'disabled' : ''}`}
-            disabled={!formData.clientName || !formData.clientPhone || !formData.date || !formData.time}
+            className={`btn-submit ${!formData.time || isCreatingAppointment ? 'disabled' : ''}`}
+            disabled={!formData.clientName || !formData.clientPhone || !formData.date || !formData.time || isCreatingAppointment}
           >
-            {formData.time ? '✅ Confirmar Cita' : '⏳ Selecciona una hora'}
+            {isCreatingAppointment ? '⏳ Agendando...' : formData.time ? '✅ Confirmar Cita' : '⏳ Selecciona una hora'}
           </button>
         </div>
       </form>
