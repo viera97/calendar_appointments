@@ -55,13 +55,28 @@ export const useAppointmentActions = ({
       appointmentStorage.saveAppointment(newAppointment);
       addAppointment(newAppointment);
 
+      // Format date and time for success message
+      const appointmentDate = new Date(formData.date);
+      const dateFormatted = appointmentDate.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        year: 'numeric', 
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const [hours, minutes] = formData.time.split(':');
+      const hour24 = parseInt(hours);
+      const ampm = hour24 >= 12 ? 'PM' : 'AM';
+      const hour12 = hour24 % 12 || 12;
+      const timeFormatted = `${hour12}:${minutes} ${ampm}`;
+
       // Add to business Google Calendar automatically
       try {
         await addAppointmentToBusinessCalendar(newAppointment);
-        showSuccess(`Cita agendada exitosamente y agregada al calendario del negocio para ${formData.date} a las ${formData.time}.`);
+        showSuccess(`Cita agendada exitosamente y agregada al calendario del negocio para ${dateFormatted} a las ${timeFormatted}.`);
       } catch (error) {
         console.error('Error adding to business calendar:', error);
-        showSuccess(`Cita agendada exitosamente para ${formData.date} a las ${formData.time}, pero no se pudo agregar al calendario del negocio.`);
+        showSuccess(`Cita agendada exitosamente para ${dateFormatted} a las ${timeFormatted}, pero no se pudo agregar al calendario del negocio.`);
       }
 
       // Navigate back to services view

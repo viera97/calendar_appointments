@@ -174,8 +174,12 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
           <button type="button" onClick={onCancel} className="btn-cancel">
             Cancelar
           </button>
-          <button type="submit" className="btn-submit">
-            Confirmar Cita
+          <button 
+            type="submit" 
+            className={`btn-submit ${!formData.time ? 'disabled' : ''}`}
+            disabled={!formData.clientName || !formData.clientPhone || !formData.date || !formData.time}
+          >
+            {formData.time ? '✅ Confirmar Cita' : '⏳ Selecciona una hora'}
           </button>
         </div>
       </form>
