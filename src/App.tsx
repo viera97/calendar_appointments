@@ -1,146 +1,27 @@
-import { useState } from 'react';
-import type { Service } from './types';
-import BusinessHeader from './components/BusinessHeader';
-import MainNavigation from './components/MainNavigation';
-import MainContent from './components/MainContent';
-import ConfirmModal from './components/ConfirmModal';
-import Notification from './components/Notification';
-import DarkModeToggle from './components/DarkModeToggle';
-import { BusinessCalendarStatus } from './components/BusinessCalendarStatus';
-import { useAppData } from './hooks/useAppData';
-import { useNotifications } from './hooks/useNotifications';
-import { useConfirmModal } from './hooks/useConfirmModal';
-import { useDarkMode } from './hooks/useDarkMode';
-import { useAppointmentActions } from './hooks/useAppointmentActions';
-import './App.css';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
 
-/**
- * Main Application Component
- * 
- * Root component that orchestrates all application functionality using
- * custom hooks for state management and modular components for UI.
- * Provides a clean separation of concerns and maintainable architecture.
- */
-function App() {
-  // View and service selection state
-  const [currentView, setCurrentView] = useState<'services' | 'booking' | 'appointments'>('services');
-  const [selectedService, setSelectedService] = useState<Service | undefined>();
+const queryClient = new QueryClient();
 
-  // Custom hooks for state management
-  const { services, appointments, businessInfo, loading, addAppointment, updateAppointment, clearHistory } = useAppData();
-  const { notification, showSuccess, showError, closeNotification } = useNotifications();
-  const { confirmModal, showConfirmModal, closeConfirmModal } = useConfirmModal();
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
-
-  // Appointment actions hook with all dependencies
-  const { handleAppointmentSubmit, handleCancelAppointment, handleBackToServices, handleClearHistory, isCreatingAppointment } = useAppointmentActions({
-    selectedService,
-    addAppointment,
-    updateAppointment,
-    clearHistory,
-    showSuccess,
-    showError,
-    showConfirmModal,
-    closeConfirmModal,
-    setCurrentView,
-    setSelectedService
-  });
-
-  /**
-   * Handle service selection for booking
-   * @param service - Selected service to book
-   */
-  const handleServiceSelect = (service: Service) => {
-    setSelectedService(service);
-    setCurrentView('booking');
-  };
-
-  /**
-   * Handle navigation view changes
-   * @param view - Target view to navigate to
-   */
-  const handleViewChange = (view: 'services' | 'appointments') => {
-    setCurrentView(view);
-  };
-
-  /**
-   * Handle appointment cancellation with appointment lookup
-   * @param appointmentId - ID of appointment to cancel
-   */
-  const handleAppointmentCancel = (appointmentId: string) => {
-    handleCancelAppointment(appointmentId, appointments);
-  };
-
-  // Show loading state
-  if (loading || !businessInfo) {
-    return (
-      <div className="app loading">
-        <div className="loading-message">Cargando...</div>
-      </div>
-    );
-  }
-
-  // Count of scheduled appointments for navigation badge
-  const scheduledAppointmentsCount = appointments.filter(apt => apt.status === 'scheduled').length;
-
-  return (
-    <div className="app">
-      {/* Business header with company information */}
-      <BusinessHeader business={businessInfo} />
-      
-      {/* Dark mode toggle button */}
-      <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
-      
-      {/* Business Calendar Status - shows configuration and instructions */}
-      <BusinessCalendarStatus />
-      
-      {/* Main navigation menu */}
-      <MainNavigation 
-        currentView={currentView}
-        onViewChange={handleViewChange}
-        appointmentCount={scheduledAppointmentsCount}
-      />
-
-      {/* Main application content */}
-      <MainContent
-        currentView={currentView}
-        services={services}
-        appointments={appointments}
-        selectedService={selectedService}
-        onServiceSelect={handleServiceSelect}
-        onAppointmentSubmit={handleAppointmentSubmit}
-        onCancelAppointment={handleAppointmentCancel}
-        onBackToServices={handleBackToServices}
-        onClearHistory={handleClearHistory}
-        isCreatingAppointment={isCreatingAppointment}
-      />
-
-      {/* Application footer */}
-      <footer className="app-footer">
-        <p>© 2024 {businessInfo?.name || 'Negocio'}. Todos los derechos reservados.</p>
-      </footer>
-
-      {/* Confirmation modal for user actions */}
-      <ConfirmModal
-        isOpen={confirmModal.isOpen}
-        title={confirmModal.title}
-        message={confirmModal.message}
-        onConfirm={confirmModal.onConfirm}
-        onCancel={closeConfirmModal}
-        confirmText={confirmModal.confirmText}
-        cancelText={confirmModal.cancelText}
-        type="danger"
-      />
-
-      {/* Notification system for user feedback */}
-      <Notification
-        isOpen={notification.isOpen}
-        message={notification.message}
-        type={notification.type}
-        onClose={closeNotification}
-      />
-    </div>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
