@@ -1,128 +1,188 @@
-# Calendar Appointments - Sistema de Agendamiento de Citas
+# Calendar Appointments - Professional Appointment Booking System
 
-Un sistema profesional de agendamiento de citas desarrollado con React, TypeScript y Vite. Permite a los usuarios seleccionar fechas y horarios de forma fácil e intuitiva.
+A professional appointment booking system built with React, TypeScript, and Vite. It allows users to select dates and times in an easy and intuitive way, with seamless Google Calendar integration.
 
-## 🚀 Características
+## 🚀 Features
 
-- **Interfaz intuitiva**: Diseño moderno y fácil de usar
-- **Selección de fechas**: Calendario interactivo para elegir fechas disponibles
-- **Gestión de horarios**: Sistema de slots de tiempo disponibles
-- **Responsive**: Adaptado para dispositivos móviles y escritorio
-- **Componentes reutilizables**: Arquitectura modular con shadcn/ui
+- **Intuitive Interface**: Modern and user-friendly design
+- **Bilingual Support**: Spanish and English language options
+- **Dark/Light Theme**: Toggle between dark and light modes
+- **Date Selection**: Interactive calendar for choosing available dates
+- **Time Management**: Available time slot system
+- **Google Calendar Integration**: Automatic appointment scheduling via API
+- **Form Validation**: Comprehensive client-side validation
+- **WhatsApp Integration**: Direct contact functionality
+- **Responsive Design**: Optimized for mobile and desktop devices
+- **Reusable Components**: Modular architecture with shadcn/ui
+- **Loading States**: Comprehensive UI feedback during API calls
 
-## 🛠️ Tecnologías
+## 🔗 API Integration
 
-Este proyecto está construido con:
+This application integrates with a Google Calendar API for automatic appointment scheduling:
 
-- **[Vite](https://vitejs.dev/)** - Build tool y dev server ultra rápido
-- **[React 18](https://reactjs.org/)** - Biblioteca de interfaz de usuario
-- **[TypeScript](https://www.typescriptlang.org/)** - Tipado estático para JavaScript
-- **[Tailwind CSS](https://tailwindcss.com/)** - Framework de CSS utility-first
-- **[shadcn/ui](https://ui.shadcn.com/)** - Componentes de UI reutilizables
-- **[Lucide React](https://lucide.dev/)** - Iconos modernos
-- **[date-fns](https://date-fns.org/)** - Utilidades para manejo de fechas
+- **Calendar Sync API**: [https://github.com/viera97/calendar_sync](https://github.com/viera97/calendar_sync)
+- **Functionality**: Automatically creates Google Calendar events when appointments are booked
+- **Real-time Sync**: Appointments are immediately available in Google Calendar
+- **Error Handling**: Robust error handling with user feedback
 
-## 📋 Prerrequisitos
+## 🛠️ Technologies
 
-Antes de comenzar, asegúrate de tener instalado:
+This project is built with:
 
-- **Node.js** (versión 18 o superior)
-- **npm** (incluido con Node.js)
+- **[Vite](https://vitejs.dev/)** - Ultra-fast build tool and dev server
+- **[React 18](https://reactjs.org/)** - User interface library
+- **[TypeScript](https://www.typescriptlang.org/)** - Static typing for JavaScript
+- **[shadcn/ui](https://ui.shadcn.com/)** - Reusable UI components
+- **[Lucide React](https://lucide.dev/)** - Modern icons
+- **[date-fns](https://date-fns.org/)** - Date manipulation utilities
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
 
-## 🔧 Instalación
+## 📋 Prerequisites
 
-1. **Clona el repositorio**
+Before starting, make sure you have:
+
+- **Node.js** (version 18 or higher)
+- **npm**
+- Access to the Calendar Sync API (see repository above)
+
+## 🔧 Installation
+
+1. **Clone the repository**
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd calendar_sync
+   git clone https://github.com/viera97/calendar_appointments
+   cd calendar_appointments
    ```
 
-2. **Instala las dependencias**
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Inicia el servidor de desarrollo**
+3. **Set up environment variables**
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_NAME=Your Company Name
+   VITE_ADDRESS=Your Business Address
+   VITE_PHONE=Your Phone Number
+   VITE_API_URL=http://localhost:8000
+   ```
+
+4. **Start the Calendar Sync API**
+   Make sure the [Calendar Sync API](https://github.com/viera97/calendar_sync) is running on the specified URL.
+
+5. **Start the development server**
    ```bash
    npm run dev
    ```
 
-4. **Abre tu navegador** y visita `http://localhost:8080`
+6. **Open your browser** and visit `http://localhost:5173`
 
-## 📝 Scripts disponibles
+## 📝 Available Scripts
 
-- `npm run dev` - Inicia el servidor de desarrollo
-- `npm run build` - Construye la aplicación para producción
-- `npm run build:dev` - Construye en modo desarrollo
-- `npm run preview` - Preview de la build de producción
-- `npm run lint` - Ejecuta el linter ESLint
+- `bun run dev` / `npm run dev` - Start the development server
+- `bun run build` / `npm run build` - Build the application for production
+- `bun run build:dev` / `npm run build:dev` - Build in development mode
+- `bun run preview` / `npm run preview` - Preview the production build
+- `bun run lint` / `npm run lint` - Run ESLint
 
-## 📁 Estructura del proyecto
+## 📁 Project Structure
 
 ```
-calendar_sync/
+calendar_appointments/
 ├── src/
-│   ├── components/          # Componentes reutilizables
-│   │   ├── ui/             # Componentes de shadcn/ui
+│   ├── components/          # Reusable components
+│   │   ├── ui/             # shadcn/ui components
 │   │   └── AppointmentWizard.tsx
 │   ├── hooks/              # Custom hooks
-│   ├── lib/                # Utilidades y configuración
-│   ├── pages/              # Páginas principales
-│   └── main.tsx            # Punto de entrada
-├── public/                 # Archivos estáticos
-├── package.json           # Dependencias y scripts
-└── README.md              # Este archivo
+│   ├── i18n/               # Internationalization
+│   ├── lib/                # Utilities and configuration
+│   ├── pages/              # Main pages
+│   ├── services/           # API services
+│   ├── types/              # TypeScript type definitions
+│   ├── utils/              # Helper functions
+│   └── main.tsx            # Entry point
+├── public/                 # Static files
+├── package.json           # Dependencies and scripts
+└── README.md              # This file
 ```
 
-## 🎨 Personalización
+## 🎨 Customization
 
-### Temas y colores
-El proyecto utiliza Tailwind CSS con variables CSS personalizadas. Puedes modificar los colores en:
-- `src/index.css` - Variables CSS globales
-- `tailwind.config.ts` - Configuración de Tailwind
+### Environment Configuration
+Configure your application by setting these environment variables:
 
-### Componentes
-Los componentes de UI están basados en shadcn/ui y se encuentran en `src/components/ui/`. Puedes personalizarlos según tus necesidades.
+- `VITE_NAME` - Your company or service name
+- `VITE_ADDRESS` - Your business address
+- `VITE_PHONE` - Your contact phone number
+- `VITE_API_URL` - Calendar Sync API endpoint
 
-## 🚀 Despliegue
+### Themes and Colors
+The project uses Tailwind CSS with custom CSS variables. You can modify colors in:
+- `src/index.css` - Global CSS variables
+- `tailwind.config.ts` - Tailwind configuration
 
-### Build de producción
+### Components
+UI components are based on shadcn/ui and located in `src/components/ui/`. You can customize them according to your needs.
+
+### Languages
+Add or modify translations in `src/i18n/translations.ts`. Currently supports Spanish and English.
+
+## 🔌 API Integration
+
+### Calendar Sync API
+This application requires the Calendar Sync API to function properly:
+
+- **Repository**: [https://github.com/viera97/calendar_sync](https://github.com/viera97/calendar_sync)
+- **Default Port**: 8000
+- **Endpoint**: `/appointments` (POST)
+- **Function**: Creates Google Calendar events automatically
+
+### API Request Format
+```typescript
+{
+  client_name: string;
+  phone_number: string;
+  service_type: string;
+  start_time: string; // ISO format
+  end_time: string;   // ISO format
+  additional_notes: string;
+  timezone: string;
+}
+```
+
+## 🚀 Deployment
+
+### Production Build
 ```bash
 npm run build
 ```
 
-Los archivos optimizados se generarán en la carpeta `dist/`.
+Optimized files will be generated in the `dist/` folder.
 
-### Despliegue en Vercel
-1. Conecta tu repositorio con Vercel
-2. El framework se detectará automáticamente como Vite
-3. El comando de build será `npm run build`
-4. El directorio de salida será `dist`
+### Deploy to Vercel
+1. Connect your repository with Vercel
+2. Framework will be automatically detected as Vite
+3. Build command will be `npm run build`
+4. Output directory will be `dist`
 
-### Despliegue en Netlify
-1. Conecta tu repositorio con Netlify
-2. Configura:
+### Deploy to Netlify
+1. Connect your repository with Netlify
+2. Configure:
    - Build command: `npm run build`
    - Publish directory: `dist`
 
-## 🤝 Contribución
+## 🤝 Contributing
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-caracteristica`)
-3. Commit tus cambios (`git commit -am 'Añadir nueva característica'`)
-4. Push a la rama (`git push origin feature/nueva-caracteristica`)
-5. Abre un Pull Request
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 📞 Soporte
-
-Si tienes alguna pregunta o necesitas ayuda, puedes:
-- Abrir un issue en GitHub
-- Contactar al equipo de desarrollo
+This project is under the MIT License. See the `LICENSE` file for more details.
 
 ---
 
-**Calendar Sync** - Sistema profesional de agendamiento de citas 📅
+**Calendar Appointments** - Professional appointment booking system with Google Calendar integration 📅

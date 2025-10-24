@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
-import { Calendar as CalendarIcon, Check, MapPin, User, Clock, Globe, Sun, Moon, Phone, UserCheck, ChevronLeft, MessageCircle } from "lucide-react";
+import { Calendar as CalendarIcon, Check, MapPin, User, Clock, Globe, Sun, Moon, Phone, UserCheck, ChevronLeft, MessageCircle, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Step, Language } from "@/types/appointment";
 import { translations } from "@/i18n/translations";
@@ -26,6 +26,7 @@ export const AppointmentWizard = () => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [availableSlots] = useState<string[]>(generateRandomTimeSlots());
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isAppointmentBooked, setIsAppointmentBooked] = useState<boolean>(false);
   
   // Usar localStorage para persistir idioma y tema
   const [language, setLanguage] = useLocalStorage<Language>("calendar-language", "es");
@@ -210,16 +211,8 @@ export const AppointmentWizard = () => {
             .replace("{time}", selectedTime),
         });
         
-        // Reset the wizard
-        setCurrentStep("address");
-        setCanGoToAddress(null);
-        setIsNewClient(null);
-        setName("");
-        setPhone("");
-        setNameError("");
-        setPhoneError("");
-        setSelectedDate(undefined);
-        setSelectedTime(null);
+        // Mostrar pantalla de confirmación
+        setIsAppointmentBooked(true);
         
       } catch (error) {
         console.error('Error creating appointment:', error);
@@ -237,6 +230,20 @@ export const AppointmentWizard = () => {
   const getStepNumber = () => {
     const steps = ["address", "newClient", "contact", "date", "time"];
     return steps.indexOf(currentStep) + 1;
+  };
+
+  const handleNewAppointment = () => {
+    // Reset the wizard
+    setCurrentStep("address");
+    setCanGoToAddress(null);
+    setIsNewClient(null);
+    setName("");
+    setPhone("");
+    setNameError("");
+    setPhoneError("");
+    setSelectedDate(undefined);
+    setSelectedTime(null);
+    setIsAppointmentBooked(false);
   };
 
   return (
@@ -334,6 +341,71 @@ export const AppointmentWizard = () => {
         </CardHeader>
         
         <CardContent className="space-y-6">
+          {/* Pantalla de confirmación */}
+          {isAppointmentBooked ? (
+            <div className="space-y-8 animate-in fade-in-50 duration-500 text-center">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {t.confirmation.title}
+                  </h2>
+                  <p className="text-muted-foreground text-lg">
+                    {t.confirmation.message}
+                  </p>
+                </div>
+              </div>
+              
+              {selectedDate && selectedTime && (
+                <div className="bg-muted/50 rounded-lg p-6 space-y-3">
+                  <h3 className="font-semibold text-lg mb-4">{t.confirmation.details}</h3>
+                  <div className="flex items-center justify-center gap-2 text-lg">
+                    <CalendarIcon className="h-5 w-5 text-primary" />
+                    <span>
+                      {format(selectedDate, language === "es" ? "EEEE, d 'de' MMMM 'de' yyyy" : "EEEE, MMMM d, yyyy", { locale })}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-lg">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <span>{selectedTime}</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-lg">
+                    <User className="h-5 w-5 text-primary" />
+                    <span>{name}</span>
+                  </div>
+                </div>
+              )}
+              
+              <div className="space-y-4">
+                <Button
+                  variant="default"
+                  size="lg"
+                  onClick={handleNewAppointment}
+                  className="w-full"
+                >
+                  {t.confirmation.newAppointment}
+                </Button>
+                
+                <div className="text-sm text-muted-foreground">
+                  {t.confirmation.whatsappMessage}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={handleWhatsAppClick}
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  <MessageCircle className="mr-2 h-5 w-5" />
+                  WhatsApp
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
           {/* Step 1: Address */}
           {currentStep === "address" && (
             <div className="space-y-6 animate-in fade-in-50 duration-500">
@@ -547,6 +619,8 @@ export const AppointmentWizard = () => {
                 </Button>
               )}
             </div>
+          )}
+            </>
           )}
         </CardContent>
       </Card>

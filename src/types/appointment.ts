@@ -45,6 +45,13 @@ export interface Translations {
     error: string;
     errorDescription: string;
   };
+  confirmation: {
+    title: string;
+    message: string;
+    details: string;
+    newAppointment: string;
+    whatsappMessage: string;
+  };
 }
 
 export interface TranslationConfig {

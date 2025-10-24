@@ -43,6 +43,13 @@ export const translations: TranslationConfig = {
       description: "Tu cita ha sido confirmada para el {date} a las {time}.",
       error: "Error al agendar la cita",
       errorDescription: "Por favor intenta nuevamente o contacta por WhatsApp."
+    },
+    confirmation: {
+      title: "¡Cita Agendada Exitosamente!",
+      message: "Gracias por confiar en nuestros servicios",
+      details: "Tu cita ha sido confirmada para:",
+      newAppointment: "Agendar Nueva Cita",
+      whatsappMessage: "¿Tienes alguna pregunta? Contáctanos por WhatsApp"
     }
   },
   en: {
@@ -87,6 +94,13 @@ export const translations: TranslationConfig = {
       description: "Your appointment has been confirmed for {date} at {time}.",
       error: "Error scheduling appointment",
       errorDescription: "Please try again or contact us via WhatsApp."
+    },
+    confirmation: {
+      title: "Appointment Successfully Scheduled!",
+      message: "Thank you for trusting our services",
+      details: "Your appointment has been confirmed for:",
+      newAppointment: "Schedule New Appointment",
+      whatsappMessage: "Have any questions? Contact us via WhatsApp"
     }
   }
 };
