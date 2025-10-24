@@ -40,7 +40,9 @@ export const translations: TranslationConfig = {
     },
     toast: {
       title: "¡Cita agendada!",
-      description: "Tu cita ha sido confirmada para el {date} a las {time}."
+      description: "Tu cita ha sido confirmada para el {date} a las {time}.",
+      error: "Error al agendar la cita",
+      errorDescription: "Por favor intenta nuevamente o contacta por WhatsApp."
     }
   },
   en: {
@@ -82,7 +84,9 @@ export const translations: TranslationConfig = {
     },
     toast: {
       title: "Appointment scheduled!",
-      description: "Your appointment has been confirmed for {date} at {time}."
+      description: "Your appointment has been confirmed for {date} at {time}.",
+      error: "Error scheduling appointment",
+      errorDescription: "Please try again or contact us via WhatsApp."
     }
   }
 };

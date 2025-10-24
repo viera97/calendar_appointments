@@ -42,6 +42,8 @@ export interface Translations {
   toast: {
     title: string;
     description: string;
+    error: string;
+    errorDescription: string;
   };
 }
 

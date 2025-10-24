@@ -12,6 +12,7 @@ import { Step, Language } from "@/types/appointment";
 import { translations } from "@/i18n/translations";
 import { EXAMPLE_ADDRESS, generateRandomTimeSlots, COMPANY_NAME, COMPANY_PHONE, generateWhatsAppLink } from "@/utils/appointment";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { appointmentService, AppointmentRequest } from "@/services/api";
 
 export const AppointmentWizard = () => {
   const [currentStep, setCurrentStep] = useState<Step>("address");
@@ -24,6 +25,7 @@ export const AppointmentWizard = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [availableSlots] = useState<string[]>(generateRandomTimeSlots());
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
   // Usar localStorage para persistir idioma y tema
   const [language, setLanguage] = useLocalStorage<Language>("calendar-language", "es");
@@ -166,31 +168,69 @@ export const AppointmentWizard = () => {
     setSelectedTime(time);
   };
 
-  const handleConfirm = () => {
-    if (selectedDate && selectedTime) {
-      const dateFormat = language === "es" 
-        ? "d 'de' MMMM 'de' yyyy" 
-        : "MMMM d, yyyy";
+  const handleConfirm = async () => {
+    if (selectedDate && selectedTime && name && phone) {
+      setIsSubmitting(true);
       
-      const formattedDate = format(selectedDate, dateFormat, { locale });
-      
-      toast({
-        title: t.toast.title,
-        description: t.toast.description
-          .replace("{date}", formattedDate)
-          .replace("{time}", selectedTime),
-      });
-      
-      // Reset the wizard
-      setCurrentStep("address");
-      setCanGoToAddress(null);
-      setIsNewClient(null);
-      setName("");
-      setPhone("");
-      setNameError("");
-      setPhoneError("");
-      setSelectedDate(undefined);
-      setSelectedTime(null);
+      try {
+        // Crear el objeto de fecha y hora
+        const appointmentDateTime = new Date(selectedDate);
+        const [hours, minutes] = selectedTime.split(':');
+        appointmentDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        
+        // Calcular hora de fin (asumiendo 1 hora de duración)
+        const endDateTime = new Date(appointmentDateTime);
+        endDateTime.setHours(endDateTime.getHours() + 1);
+        
+        // Preparar los datos para la API
+        const appointmentData: AppointmentRequest = {
+          client_name: name.trim(),
+          phone_number: phone.trim(),
+          service_type: isNewClient ? "Consulta - Cliente Nuevo" : "Consulta - Cliente Existente",
+          start_time: appointmentDateTime.toISOString(),
+          end_time: endDateTime.toISOString(),
+          additional_notes: `Dirección confirmada: ${canGoToAddress ? "Sí" : "No"}. Idioma preferido: ${language}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
+        };
+        
+        // Enviar a la API
+        await appointmentService.createAppointment(appointmentData);
+        
+        // Mostrar mensaje de éxito
+        const dateFormat = language === "es" 
+          ? "d 'de' MMMM 'de' yyyy" 
+          : "MMMM d, yyyy";
+        
+        const formattedDate = format(selectedDate, dateFormat, { locale });
+        
+        toast({
+          title: t.toast.title,
+          description: t.toast.description
+            .replace("{date}", formattedDate)
+            .replace("{time}", selectedTime),
+        });
+        
+        // Reset the wizard
+        setCurrentStep("address");
+        setCanGoToAddress(null);
+        setIsNewClient(null);
+        setName("");
+        setPhone("");
+        setNameError("");
+        setPhoneError("");
+        setSelectedDate(undefined);
+        setSelectedTime(null);
+        
+      } catch (error) {
+        console.error('Error creating appointment:', error);
+        toast({
+          title: t.toast.error,
+          description: t.toast.errorDescription,
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -201,7 +241,19 @@ export const AppointmentWizard = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--gradient-soft)] p-4">
-      <Card className="w-full max-w-2xl shadow-[var(--shadow-card)] border-border/50">
+      <Card className="w-full max-w-2xl shadow-[var(--shadow-card)] border-border/50 relative">
+        {/* Loading Overlay */}
+        {isSubmitting && (
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+            <div className="flex flex-col items-center gap-4">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
+              <p className="text-sm font-medium text-muted-foreground">
+                {language === "es" ? "Agendando tu cita..." : "Scheduling your appointment..."}
+              </p>
+            </div>
+          </div>
+        )}
+        
         <CardHeader className="space-y-2">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
@@ -215,6 +267,7 @@ export const AppointmentWizard = () => {
                   onClick={handleWhatsAppClick}
                   className="h-6 w-6 p-0 text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950"
                   title="Contactar por WhatsApp"
+                  disabled={isSubmitting}
                 >
                   <MessageCircle className="h-4 w-4" />
                 </Button>
@@ -225,6 +278,7 @@ export const AppointmentWizard = () => {
                   size="sm"
                   onClick={toggleLanguage}
                   className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                  disabled={isSubmitting}
                 >
                   <Globe className="h-3 w-3 mr-1" />
                   {language === "es" ? "EN" : "ES"}
@@ -234,6 +288,7 @@ export const AppointmentWizard = () => {
                   size="sm"
                   onClick={toggleTheme}
                   className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                  disabled={isSubmitting}
                 >
                   {isDarkMode ? (
                     <Sun className="h-3 w-3" />
@@ -250,6 +305,7 @@ export const AppointmentWizard = () => {
                   size="sm"
                   onClick={goToPreviousStep}
                   className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                  disabled={isSubmitting}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -294,6 +350,7 @@ export const AppointmentWizard = () => {
                   size="lg"
                   onClick={() => handleAddressResponse(true)}
                   className="flex-1"
+                  disabled={isSubmitting}
                 >
                   <Check className="mr-2 h-5 w-5" />
                   {t.address.canGo}
@@ -303,6 +360,7 @@ export const AppointmentWizard = () => {
                   size="lg"
                   onClick={() => handleAddressResponse(false)}
                   className="flex-1 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
+                  disabled={isSubmitting}
                 >
                   {t.address.cantGo}
                 </Button>
@@ -323,6 +381,7 @@ export const AppointmentWizard = () => {
                   size="lg"
                   onClick={() => handleClientTypeResponse(true)}
                   className="flex-1"
+                  disabled={isSubmitting}
                 >
                   {t.client.newClient}
                 </Button>
@@ -331,6 +390,7 @@ export const AppointmentWizard = () => {
                   size="lg"
                   onClick={() => handleClientTypeResponse(false)}
                   className="flex-1"
+                  disabled={isSubmitting}
                 >
                   {t.client.existingClient}
                 </Button>
@@ -359,6 +419,7 @@ export const AppointmentWizard = () => {
                       if (nameError) setNameError("");
                     }}
                     className={nameError ? "border-destructive" : ""}
+                    disabled={isSubmitting}
                   />
                   {nameError && (
                     <p className="text-sm text-destructive">{nameError}</p>
@@ -393,6 +454,7 @@ export const AppointmentWizard = () => {
                       }}
                       className={`pl-10 ${phoneError ? "border-destructive" : ""}`}
                       maxLength={20}
+                      disabled={isSubmitting}
                     />
                   </div>
                   {phoneError && (
@@ -406,6 +468,7 @@ export const AppointmentWizard = () => {
                 size="lg"
                 onClick={handleContactSubmit}
                 className="w-full"
+                disabled={isSubmitting}
               >
                 <Check className="mr-2 h-5 w-5" />
                 {t.contact.continueButton}
@@ -425,7 +488,10 @@ export const AppointmentWizard = () => {
                   mode="single"
                   selected={selectedDate}
                   onSelect={handleDateSelect}
-                  disabled={(date) => date < new Date() || date < new Date(new Date().setHours(0, 0, 0, 0))}
+                  disabled={(date) => {
+                    if (isSubmitting) return true;
+                    return date < new Date() || date < new Date(new Date().setHours(0, 0, 0, 0));
+                  }}
                   initialFocus
                   className="rounded-md border shadow-sm"
                 />
@@ -453,6 +519,7 @@ export const AppointmentWizard = () => {
                     size="lg"
                     onClick={() => handleTimeSelect(slot)}
                     className="h-14"
+                    disabled={isSubmitting}
                   >
                     {slot}
                   </Button>
@@ -464,9 +531,19 @@ export const AppointmentWizard = () => {
                   size="lg"
                   onClick={handleConfirm}
                   className="w-full mt-6"
+                  disabled={isSubmitting}
                 >
-                  <Check className="mr-2 h-5 w-5" />
-                  {t.time.confirm}
+                  {isSubmitting ? (
+                    <>
+                      <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-background border-t-foreground" />
+                      {language === "es" ? "Agendando..." : "Scheduling..."}
+                    </>
+                  ) : (
+                    <>
+                      <Check className="mr-2 h-5 w-5" />
+                      {t.time.confirm}
+                    </>
+                  )}
                 </Button>
               )}
             </div>
